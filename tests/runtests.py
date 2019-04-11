@@ -5,6 +5,13 @@ from django.test.runner import DiscoverRunner
 
 if not settings.configured:
     settings.configure(
+        TEMPLATES=[
+            {
+                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                'DIRS': [],
+                'APP_DIRS': True,
+            },
+        ],
         DATABASES={
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
