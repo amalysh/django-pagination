@@ -104,7 +104,7 @@ pagination tags.  Here's an overview:
 setup(
     name='mysociety-django-pagination',
     version=version,
-    description="django-pagination",
+    description="django-pagination fork with Django 1.11 support",
     long_description=LONG_DESCRIPTION,
     classifiers=[
         "Programming Language :: Python",
@@ -115,7 +115,7 @@ setup(
     keywords='pagination,django',
     author='Eric Florenzano',
     author_email='floguy@gmail.com',
-    url='http://django-pagination.googlecode.com/',
+    url='https://github.com/mysociety/django-pagination',
     license='BSD',
     packages=find_packages(),
     include_package_data=True,
