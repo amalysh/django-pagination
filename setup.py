@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.0.7'
+version = '1.0.8'
 
 LONG_DESCRIPTION = """
 How to use django-pagination
@@ -102,7 +102,7 @@ pagination tags.  Here's an overview:
 """
 
 setup(
-    name='django-pagination',
+    name='mysociety-django-pagination',
     version=version,
     description="django-pagination",
     long_description=LONG_DESCRIPTION,
