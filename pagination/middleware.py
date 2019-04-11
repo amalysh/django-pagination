@@ -1,3 +1,4 @@
+from builtins import object
 def get_page(self, suffix):
     """
     A function which will be monkeypatched onto the request to get the current

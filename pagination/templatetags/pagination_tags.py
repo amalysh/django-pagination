@@ -1,3 +1,4 @@
+from builtins import filter
 try:
     set
 except NameError:
@@ -25,7 +26,7 @@ def do_autopaginate(parser, token):
     # Check whether there are any other autopaginations are later in this template
     expr = lambda obj: (obj.token_type == TOKEN_BLOCK and \
         len(obj.split_contents()) > 0 and obj.split_contents()[0] == "autopaginate")
-    multiple_paginations = len(filter(expr, parser.tokens)) > 0
+    multiple_paginations = len(list(filter(expr, parser.tokens))) > 0
 
     split = token.split_contents()
     as_index = None
@@ -88,7 +89,7 @@ class AutoPaginateNode(template.Node):
         self.multiple_paginations = multiple_paginations
 
     def render(self, context):
-        if self.multiple_paginations or context.has_key('paginator'):
+        if self.multiple_paginations or 'paginator' in context:
             page_suffix = '_%s' % self.queryset_var
         else:
             page_suffix = ''
@@ -234,12 +235,12 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             getvars = context['request'].GET.copy()
             if 'page%s' % page_suffix in getvars:
                 del getvars['page%s' % page_suffix]
-            if len(getvars.keys()) > 0:
+            if len(list(getvars.keys())) > 0:
                 to_return['getvars'] = "&%s" % getvars.urlencode()
             else:
                 to_return['getvars'] = ''
         return to_return
-    except KeyError, AttributeError:
+    except (KeyError, AttributeError):
         return {}
 
 register.inclusion_tag('pagination/pagination.html', takes_context=True)(

@@ -1,4 +1,7 @@
-from StringIO import StringIO
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from io import StringIO
 
 from django.core.paginator import Paginator
 from django.core.handlers.wsgi import WSGIRequest
@@ -18,63 +21,63 @@ class HttpRequest(DjangoHttpRequest):
 
 class PaginationTestCase(SimpleTestCase):
     def test_paginator_1(self):
-        p = Paginator(range(15), 2)
+        p = Paginator(list(range(15)), 2)
         pg = paginate({'paginator': p, 'page_obj': p.page(1)})
         self.assertEqual(pg['pages'], [1, 2, 3, 4, 5, 6, 7, 8])
         self.assertEqual(pg['records']['first'], 1)
         self.assertEqual(pg['records']['last'], 2)
 
     def test_paginator_2(self):
-        p = Paginator(range(15), 2)
+        p = Paginator(list(range(15)), 2)
         pg = paginate({'paginator': p, 'page_obj': p.page(8)})
         self.assertEqual(pg['pages'], [1, 2, 3, 4, 5, 6, 7, 8])
         self.assertEqual(pg['records']['first'], 15)
         self.assertEqual(pg['records']['last'], 15)
 
     def test_paginator_3(self):
-        p = Paginator(range(17), 2)
+        p = Paginator(list(range(17)), 2)
         self.assertEqual(
             paginate({'paginator': p, 'page_obj': p.page(1)})['pages'],
             [1, 2, 3, 4, 5, 6, 7, 8, 9]
         )
 
     def test_paginator_4(self):
-        p = Paginator(range(19), 2)
+        p = Paginator(list(range(19)), 2)
         self.assertEqual(
             paginate({'paginator': p, 'page_obj': p.page(1)})['pages'],
             [1, 2, 3, 4, None, 7, 8, 9, 10]
         )
 
     def test_paginator_5(self):
-        p = Paginator(range(21), 2)
+        p = Paginator(list(range(21)), 2)
         self.assertEqual(
             paginate({'paginator': p, 'page_obj': p.page(1)})['pages'],
             [1, 2, 3, 4, None, 8, 9, 10, 11]
         )
 
     def test_paginator_6(self):
-        p = Paginator(range(5), 2, 1)
+        p = Paginator(list(range(5)), 2, 1)
         self.assertEqual(
             paginate({'paginator': p, 'page_obj': p.page(1)})['pages'],
             [1, 2]
         )
 
     def test_paginator_7(self):
-        p = Paginator(range(21), 2, 1)
+        p = Paginator(list(range(21)), 2, 1)
         pg = paginate({'paginator': p, 'page_obj': p.page(1)})
         self.assertEqual(pg['pages'], [1, 2, 3, 4, None, 7, 8, 9, 10])
         self.assertEqual(pg['records']['first'], 1)
         self.assertEqual(pg['records']['last'], 2)
 
     def test_paginator_8(self):
-        p = Paginator(range(21), 2, 1)
+        p = Paginator(list(range(21)), 2, 1)
         pg = paginate({'paginator': p, 'page_obj': p.page(10)})
         self.assertEqual(pg['pages'], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         self.assertEqual(pg['records']['first'], 19)
         self.assertEqual(pg['records']['last'], 21)
 
     def test_paginator_9(self):
-        p = Paginator(range(21), 2, 1)
+        p = Paginator(list(range(21)), 2, 1)
         self.assertEqual(
             paginate({'paginator': p, 'page_obj': p.page(1)})['pages'],
             [1, 2, 3, 4, None, 7, 8, 9, 10]
@@ -85,26 +88,26 @@ class PaginationTestCase(SimpleTestCase):
 
         self.assertIn(
             u'<div class="pagination">',
-            t.render(Context({'var': range(21), 'request': HttpRequest()}))
+            t.render(Context({'var': list(range(21)), 'request': HttpRequest()}))
         )
 
     def test_template_2(self):
         t = Template("{% load pagination_tags %}{% autopaginate var %}{% paginate %}")
         self.assertIn(
             u'<div class="pagination">',
-            t.render(Context({'var': range(21), 'request': HttpRequest()}))
+            t.render(Context({'var': list(range(21)), 'request': HttpRequest()}))
         )
 
     def test_template_3(self):
         t = Template("{% load pagination_tags %}{% autopaginate var 20 %}{% paginate %}")
         self.assertIn(
             u'<div class="pagination">',
-            t.render(Context({'var': range(21), 'request': HttpRequest()}))
+            t.render(Context({'var': list(range(21)), 'request': HttpRequest()}))
         )
 
     def test_template_4(self):
         t = Template("{% load pagination_tags %}{% autopaginate var by %}{% paginate %}")
-        r = t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()}))
+        r = t.render(Context({'var': list(range(21)), 'by': 20, 'request': HttpRequest()}))
 
         self.assertIn(u'<div class="pagination">', r)
         self.assertIn(u'<a href="?page=2"', r)
@@ -112,19 +115,19 @@ class PaginationTestCase(SimpleTestCase):
     def test_template_5(self):
         t = Template("{% load pagination_tags %}{% autopaginate var by as foo %}{{ foo }}")
         self.assertEqual(
-            t.render(Context({'var': range(21), 'by': 20, 'request': HttpRequest()})),
+            t.render(Context({'var': list(range(21)), 'by': 20, 'request': HttpRequest()})),
             u'[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]'
         )
 
     def test_template_6(self):
         t = Template("{% load pagination_tags %}{% autopaginate var2 by as foo2 %}{% paginate %}{% autopaginate var by as foo %}{% paginate %}")
-        r = t.render(Context({'var': range(21), 'var2': range(50, 121), 'by': 20, 'request': HttpRequest()}))
+        r = t.render(Context({'var': list(range(21)), 'var2': list(range(50, 121)), 'by': 20, 'request': HttpRequest()}))
         self.assertIn(u'<div class="pagination">', r)
         self.assertIn(u'<a href="?page_var2=2"', r)
         self.assertIn(u'<a href="?page_var=2"', r)
 
     def test_infinite_paginator(self):
-        p = InfinitePaginator(range(20), 2, link_template='/bacon/page/%d')
+        p = InfinitePaginator(list(range(20)), 2, link_template='/bacon/page/%d')
         self.assertEqual(p.validate_number(2), 2)
         self.assertEqual(p.orphans, 0)
 
@@ -142,7 +145,7 @@ class PaginationTestCase(SimpleTestCase):
         self.assertFalse(p.page(1).has_previous())
 
     def test_finite_paginator_1(self):
-        p = FinitePaginator(range(20), 2, offset=10, link_template='/bacon/page/%d')
+        p = FinitePaginator(list(range(20)), 2, offset=10, link_template='/bacon/page/%d')
         self.assertEqual(p.validate_number(2), 2)
         self.assertEqual(p.orphans, 0)
 
@@ -158,7 +161,7 @@ class PaginationTestCase(SimpleTestCase):
         self.assertEqual(p3.previous_link(), '/bacon/page/2')
 
     def test_finite_paginator_2(self):
-        p = FinitePaginator(range(20), 20, offset=10, link_template='/bacon/page/%d')
+        p = FinitePaginator(list(range(20)), 20, offset=10, link_template='/bacon/page/%d')
 
         p2 = p.page(2)
         self.assertEqual(repr(p2), u'<Page 2>')
