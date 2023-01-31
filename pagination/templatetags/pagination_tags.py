@@ -5,7 +5,7 @@ except NameError:
     from sets import Set as set
 
 from django import template
-from django.template.base import TOKEN_BLOCK
+from django.template.base import TokenType
 from django.http import Http404
 from django.core.paginator import Paginator, InvalidPage
 from django.conf import settings
@@ -24,7 +24,7 @@ def do_autopaginate(parser, token):
     """
 
     # Check whether there are any other autopaginations are later in this template
-    expr = lambda obj: (obj.token_type == TOKEN_BLOCK and \
+    expr = lambda obj: (obj.token_type == TokenType.BLOCK and \
         len(obj.split_contents()) > 0 and obj.split_contents()[0] == "autopaginate")
     multiple_paginations = len(list(filter(expr, parser.tokens))) > 0
 
